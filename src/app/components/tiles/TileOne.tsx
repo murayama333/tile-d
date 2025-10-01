@@ -1,9 +1,10 @@
-type Props = { html: string };
+type Props = { html: string; widthVW: number };
 
-export default function TileOne({ html }: Props) {
+export default function TileOne({ html, widthVW }: Props) {
   return (
     <div
-      className="common bg-white fixed left-0 top-0 w-[60vw] h-screen :bg-neutral-800"
+      className="common bg-white fixed left-0 top-0 h-screen"
+      style={{ width: `${widthVW}vw` }}
       contentEditable={true}
       dangerouslySetInnerHTML={{ __html: html }}
     ></div>
