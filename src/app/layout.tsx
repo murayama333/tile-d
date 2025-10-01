@@ -35,17 +35,6 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
-        <Script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js" strategy="beforeInteractive" />
-        <Script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/go.min.js" strategy="beforeInteractive" />
-        <Script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" strategy="beforeInteractive" />
-        <Script src="https://cdn.jsdelivr.net/npm/marked-highlight/lib/index.umd.js" strategy="beforeInteractive" />
-        <Script id="hljs-init" strategy="afterInteractive">
-          {`hljs.highlightAll();`}
-        </Script>
-        <Script src="/md2slide.js" strategy="afterInteractive" />
-        <Script id="trigger-load" strategy="afterInteractive">
-          {`try { window.dispatchEvent(new Event('load')); } catch (e) { console.error(e); }`}
-        </Script>
       </body>
     </html>
   );
