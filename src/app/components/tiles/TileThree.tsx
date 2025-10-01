@@ -3,6 +3,7 @@ type Props = {
   open: boolean;
   onToggleSize: () => void;
   widthVW: number;
+  topHeightVH: number;
 };
 
 export default function TileThree({
@@ -10,15 +11,20 @@ export default function TileThree({
   open,
   onToggleSize,
   widthVW,
+  topHeightVH,
 }: Props) {
   return (
     <div
-      className={`common bg-teal-600 text-white fixed bottom-0 left-0 z-[3] ${
+      className={`common bg-teal-600 text-white fixed left-0 z-[3] ${
         open
-          ? "opacity-100 pointer-events-auto h-[50vh] p-2"
-          : "opacity-0 pointer-events-none h-[50vh] p-2"
+          ? "opacity-100 pointer-events-auto p-2"
+          : "opacity-0 pointer-events-none p-2"
       }`}
-      style={{ width: `${widthVW}vw` }}
+      style={{
+        width: `${widthVW}vw`,
+        top: `${topHeightVH}vh`,
+        height: `${100 - topHeightVH}vh`,
+      }}
       contentEditable={false}
       onDoubleClick={onToggleSize}
       dangerouslySetInnerHTML={{ __html: html }}
