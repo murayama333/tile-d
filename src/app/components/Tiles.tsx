@@ -28,12 +28,14 @@ export default function Tiles({
   onToggleTwo,
   onToggleThree,
 }: Props) {
-  const [leftVW, setLeftVW] = useState(60);
-  const [topVH, setTopVH] = useState(50);
+  const [leftVW, setLeftVW] = useState(100);
+  const [topVH, setTopVH] = useState(100);
   const rightVW = 100 - leftVW;
 
   const dragging = useRef(false);
   const draggingH = useRef(false);
+  const prevOpenTwo = useRef(openTwo);
+  const prevOpenThree = useRef(openThree);
 
   const onMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -69,6 +71,22 @@ export default function Tiles({
       window.removeEventListener("mouseup", onUp);
     };
   }, []);
+
+  // PanelTwo を開いたときに 60:40 へスナップ
+  useEffect(() => {
+    if (!prevOpenTwo.current && openTwo) {
+      setLeftVW(60);
+    }
+    prevOpenTwo.current = openTwo;
+  }, [openTwo]);
+
+  // PanelThree を開いたときに 上下 50:50 へスナップ
+  useEffect(() => {
+    if (!prevOpenThree.current && openThree) {
+      setTopVH(50);
+    }
+    prevOpenThree.current = openThree;
+  }, [openThree]);
 
   return (
     <>

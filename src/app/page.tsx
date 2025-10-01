@@ -83,7 +83,9 @@ export default function Home() {
   const parsed: Parsed = useMemo(() => {
     const parts = raw.split(/^##\s/m);
     const adjustFirstLine = (s: string) => {
-      if (s.startsWith("サンプルコード\n")) return s.replace("サンプルコード\n", "");
+      if (s.startsWith("サンプルコード\n"))
+        return s.replace("サンプルコード\n", "");
+      if (s.startsWith("イメージ\n")) return s.replace("イメージ\n", "");
       if (s.startsWith("実行結果\n")) return s.replace("実行結果\n", "");
       if (s.startsWith("ポイント")) return s.replace("ポイント", "");
       return s;
@@ -139,7 +141,12 @@ export default function Home() {
 
   return (
     <div>
-      <UrlInput url={url} visible={showUrl} onChange={setUrl} onLoad={fetchUrl} />
+      <UrlInput
+        url={url}
+        visible={showUrl}
+        onChange={setUrl}
+        onLoad={fetchUrl}
+      />
       <ContentsInput
         value={raw}
         visible={showContents}
