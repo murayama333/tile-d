@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/go.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked-highlight/lib/index.umd.js"></script>
+    <script>hljs.highlightAll();</script>
+    <title>My App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="common url-input">
+        <input type="text" id="url" placeholder="URL">
+        <button id="load-url">Load</button>
+    </div>
+    <div class="common contents-input">
+        <textarea id="contents" placeholder="Contents"></textarea>
+    </div>
+
+    <div class="common one" contenteditable="true"></div>
+    <div class="common two fade" contenteditable="true"></div>
+    <div class="common three fade" contenteditable="false"></div>
+    <div class="common four fade" contenteditable="true"></div>
+    <script src="md2slide.js"></script>
+</body>
+
+</html>

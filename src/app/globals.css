@@ -24,3 +24,10 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Tailwindのユーティリティは各コンポーネントに直書きしました */
+/* 見出し内のアイコンのみ擬似要素で最小限維持 */
+.two h3:before {
+  content: "📌";
+  margin-right: 0.5rem;
+}
