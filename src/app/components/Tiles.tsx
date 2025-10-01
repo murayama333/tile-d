@@ -10,6 +10,7 @@ type Props = {
   htmlTwo: string;
   htmlThree: string;
   htmlFour: string;
+  openOne?: boolean;
   openTwo: boolean;
   openThree: boolean;
   openFour: boolean;
@@ -22,6 +23,7 @@ export default function Tiles({
   htmlTwo,
   htmlThree,
   htmlFour,
+  openOne = true,
   openTwo,
   openThree,
   openFour,
@@ -75,7 +77,11 @@ export default function Tiles({
   // PanelTwo を開いたときに 60:40 へスナップ
   useEffect(() => {
     if (!prevOpenTwo.current && openTwo) {
+      // close -> open
       setLeftVW(60);
+    } else if (prevOpenTwo.current && !openTwo) {
+      // open -> close
+      setLeftVW(100);
     }
     prevOpenTwo.current = openTwo;
   }, [openTwo]);
@@ -83,14 +89,23 @@ export default function Tiles({
   // PanelThree を開いたときに 上下 50:50 へスナップ
   useEffect(() => {
     if (!prevOpenThree.current && openThree) {
+      // close -> open
       setTopVH(50);
+    } else if (prevOpenThree.current && !openThree) {
+      // open -> close
+      setTopVH(100);
     }
     prevOpenThree.current = openThree;
   }, [openThree]);
 
   return (
     <>
-      <TileOne html={htmlOne} widthVW={leftVW} heightVH={topVH} />
+      <TileOne
+        html={htmlOne}
+        widthVW={leftVW}
+        heightVH={topVH}
+        visible={openOne}
+      />
       <div
         className="fixed top-0 left-0 h-screen z-[5] cursor-col-resize"
         style={{ left: `${leftVW}vw`, width: 8 }}

@@ -19,6 +19,7 @@ export default function Home() {
   const [raw, setRaw] = useState("");
   const [showUrl, setShowUrl] = useState(false);
   const [showContents, setShowContents] = useState(false);
+  const [openOne, setOpenOne] = useState(true);
   const [openTwo, setOpenTwo] = useState(false);
   const [openThree, setOpenThree] = useState(false);
   const [openFour, setOpenFour] = useState(false);
@@ -47,9 +48,12 @@ export default function Home() {
       if (e.altKey) {
         e.preventDefault();
         if (e.code === "Digit0" || e.code === "Numpad0") {
+          setOpenOne(true);
           setOpenTwo(false);
           setOpenThree(false);
           setOpenFour(false);
+        } else if (e.code === "Digit1" || e.code === "Numpad1") {
+          setOpenOne((v) => !v);
         } else if (e.code === "Digit2" || e.code === "Numpad2") {
           setOpenTwo((v) => !v);
         } else if (e.code === "Digit3" || e.code === "Numpad3") {
@@ -78,7 +82,7 @@ export default function Home() {
     };
     window.addEventListener("keydown", keydown);
     return () => window.removeEventListener("keydown", keydown);
-  }, [openTwo, openThree, openFour]);
+  }, [openOne, openTwo, openThree, openFour]);
 
   const parsed: Parsed = useMemo(() => {
     const parts = raw.split(/^##\s/m);
@@ -158,6 +162,7 @@ export default function Home() {
         htmlTwo={html.two}
         htmlThree={html.three}
         htmlFour={html.four}
+        openOne={openOne}
         openTwo={openTwo}
         openThree={openThree}
         openFour={openFour}
