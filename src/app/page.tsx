@@ -35,6 +35,7 @@ export default function Home() {
   const [openThree, setOpenThree] = useState(false);
   const [openFour, setOpenFour] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [layoutVersion, setLayoutVersion] = useState(0);
 
   const defaultMdUrl =
     "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part1/02_css.md";
@@ -72,11 +73,21 @@ export default function Home() {
     if (!ch) return;
     if (urlIdx + 1 < ch.urls.length) {
       setUrlIdx(urlIdx + 1);
+      setOpenOne(true);
+      setOpenTwo(false);
+      setOpenThree(false);
+      setOpenFour(false);
+      setLayoutVersion((v) => v + 1);
       return;
     }
     if (chapterIdx + 1 < c.chapters.length) {
       setChapterIdx(chapterIdx + 1);
       setUrlIdx(0);
+      setOpenOne(true);
+      setOpenTwo(false);
+      setOpenThree(false);
+      setOpenFour(false);
+      setLayoutVersion((v) => v + 1);
       return;
     }
   }, [agenda, courseIdx, chapterIdx, urlIdx]);
@@ -84,6 +95,11 @@ export default function Home() {
   const gotoPrev = useCallback(() => {
     if (urlIdx - 1 >= 0) {
       setUrlIdx(urlIdx - 1);
+      setOpenOne(true);
+      setOpenTwo(false);
+      setOpenThree(false);
+      setOpenFour(false);
+      setLayoutVersion((v) => v + 1);
       return;
     }
     if (chapterIdx - 1 >= 0) {
@@ -92,6 +108,11 @@ export default function Home() {
       if (!prevCh) return;
       setChapterIdx(chapterIdx - 1);
       setUrlIdx(prevCh.urls.length - 1);
+      setOpenOne(true);
+      setOpenTwo(false);
+      setOpenThree(false);
+      setOpenFour(false);
+      setLayoutVersion((v) => v + 1);
       return;
     }
   }, [agenda, courseIdx, chapterIdx, urlIdx]);
@@ -122,9 +143,16 @@ export default function Home() {
           else if (!openThree) setOpenThree(true);
           else if (!openFour) setOpenFour(true);
           else {
-            setOpenTwo(false);
-            setOpenThree(false);
-            setOpenFour(false);
+            // PanelFour まで開いている場合は次ページへ（Alt+Down と同等）
+            gotoNext();
+          }
+        } else if ((e as any).key === "ArrowLeft") {
+          // 逆順に閉じていき、全て閉なら前ページへ
+          if (openFour) setOpenFour(false);
+          else if (openThree) setOpenThree(false);
+          else if (openTwo) setOpenTwo(false);
+          else {
+            gotoPrev();
           }
         } else if (e.code === "KeyF") {
           if (document.documentElement.requestFullscreen) {
@@ -196,6 +224,24 @@ export default function Home() {
     } catch {}
   }, [html, mounted]);
 
+  const courseTitle = agenda[courseIdx]?.course ?? "";
+  const chapterTitle = agenda[courseIdx]?.chapters?.[chapterIdx]?.title ?? "";
+  const slideTotal = useMemo(() => {
+    const c = agenda[courseIdx];
+    if (!c) return 0;
+    return c.chapters.reduce((sum, ch) => sum + (ch.urls?.length ?? 0), 0);
+  }, [agenda, courseIdx]);
+  const slideCurrent = useMemo(() => {
+    const c = agenda[courseIdx];
+    if (!c) return 0;
+    let count = 0;
+    for (let i = 0; i < chapterIdx; i++) {
+      count += c.chapters[i]?.urls?.length ?? 0;
+    }
+    const within = c.chapters[chapterIdx]?.urls?.length ?? 0;
+    return count + Math.min(urlIdx + 1, within);
+  }, [agenda, courseIdx, chapterIdx, urlIdx]);
+
   const toggleTwoSize = useCallback(() => {
     // 100vw/100vh <-> 40vw/100vh 相当の切替は、ここでは open 状態のままにして、
     // 実装簡略化のためサイズ固定のままとします。必要なら state を増やして切替可能です。
@@ -211,6 +257,10 @@ export default function Home() {
         setUrl={() => {}}
         agenda={agenda}
         loadAgenda={loadAgenda}
+        courseTitle={courseTitle}
+        chapterTitle={chapterTitle}
+        slideTotal={slideTotal}
+        slideCurrent={slideCurrent}
       />
       <UrlInput
         url={url}
@@ -235,6 +285,7 @@ export default function Home() {
         openFour={openFour}
         onToggleTwo={toggleTwoSize}
         onToggleThree={toggleThreeSize}
+        layoutVersion={layoutVersion}
       />
     </div>
   );

@@ -16,6 +16,7 @@ type Props = {
   openFour: boolean;
   onToggleTwo: () => void;
   onToggleThree: () => void;
+  layoutVersion?: number;
 };
 
 export default function Tiles({
@@ -29,6 +30,7 @@ export default function Tiles({
   openFour,
   onToggleTwo,
   onToggleThree,
+  layoutVersion = 0,
 }: Props) {
   const [leftVW, setLeftVW] = useState(100);
   const [topVH, setTopVH] = useState(100);
@@ -114,6 +116,12 @@ export default function Tiles({
     }
     prevOpenThree.current = openThree;
   }, [openThree]);
+
+  // 親からのレイアウトリセット指示（ページ送り時など）
+  useEffect(() => {
+    setLeftVW(100);
+    setTopVH(100);
+  }, [layoutVersion]);
 
   return (
     <>
