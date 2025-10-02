@@ -6,6 +6,7 @@ import hljs from "highlight.js";
 import UrlInput from "./components/UrlInput";
 import ContentsInput from "./components/ContentsInput";
 import Tiles from "./components/Tiles";
+import { Settings } from "./components/settings";
 
 type Parsed = {
   one: string;
@@ -14,11 +15,21 @@ type Parsed = {
   four: string;
 };
 
+export type Agenda = {
+  course: string;
+  chapters: { title: string; urls: string[] }[];
+};
+
 export default function Home() {
   const [url, setUrl] = useState("");
   const [raw, setRaw] = useState("");
   const [showUrl, setShowUrl] = useState(false);
   const [showContents, setShowContents] = useState(false);
+  // Agenda state and navigation
+  const [agenda, setAgenda] = useState<Agenda[]>([]);
+  const [courseIdx, setCourseIdx] = useState(0);
+  const [chapterIdx, setChapterIdx] = useState(0);
+  const [urlIdx, setUrlIdx] = useState(0);
   const [openOne, setOpenOne] = useState(true);
   const [openTwo, setOpenTwo] = useState(false);
   const [openThree, setOpenThree] = useState(false);
@@ -38,6 +49,52 @@ export default function Home() {
   useEffect(() => {
     fetchUrl();
   }, [fetchUrl]);
+  const loadAgenda = useCallback(async () => {
+    try {
+      const res = await fetch("/agenda.json");
+      const data = (await res.json()) as Agenda[];
+      setAgenda(data);
+    } catch {}
+  }, []);
+
+  // When navigation indices change, update url/raw by fetching the selected md
+  useEffect(() => {
+    const selected = agenda[courseIdx]?.chapters[chapterIdx]?.urls?.[urlIdx];
+    if (selected) {
+      setUrl(selected);
+    }
+  }, [agenda, courseIdx, chapterIdx, urlIdx]);
+
+  const gotoNext = useCallback(() => {
+    const c = agenda[courseIdx];
+    if (!c) return;
+    const ch = c.chapters[chapterIdx];
+    if (!ch) return;
+    if (urlIdx + 1 < ch.urls.length) {
+      setUrlIdx(urlIdx + 1);
+      return;
+    }
+    if (chapterIdx + 1 < c.chapters.length) {
+      setChapterIdx(chapterIdx + 1);
+      setUrlIdx(0);
+      return;
+    }
+  }, [agenda, courseIdx, chapterIdx, urlIdx]);
+
+  const gotoPrev = useCallback(() => {
+    if (urlIdx - 1 >= 0) {
+      setUrlIdx(urlIdx - 1);
+      return;
+    }
+    if (chapterIdx - 1 >= 0) {
+      const c = agenda[courseIdx];
+      const prevCh = c?.chapters[chapterIdx - 1];
+      if (!prevCh) return;
+      setChapterIdx(chapterIdx - 1);
+      setUrlIdx(prevCh.urls.length - 1);
+      return;
+    }
+  }, [agenda, courseIdx, chapterIdx, urlIdx]);
 
   useEffect(() => {
     setMounted(true);
@@ -77,12 +134,16 @@ export default function Home() {
           setShowUrl((v) => !v);
         } else if (e.code === "KeyC") {
           setShowContents((v) => !v);
+        } else if (e.code === "ArrowDown") {
+          gotoNext();
+        } else if (e.code === "ArrowUp") {
+          gotoPrev();
         }
       }
     };
     window.addEventListener("keydown", keydown);
     return () => window.removeEventListener("keydown", keydown);
-  }, [openOne, openTwo, openThree, openFour]);
+  }, [openOne, openTwo, openThree, openFour, gotoNext, gotoPrev]);
 
   const parsed: Parsed = useMemo(() => {
     const parts = raw.split(/^##\s/m);
@@ -145,6 +206,12 @@ export default function Home() {
 
   return (
     <div>
+      <Settings
+        url={"/agenda.json"}
+        setUrl={() => {}}
+        agenda={agenda}
+        loadAgenda={loadAgenda}
+      />
       <UrlInput
         url={url}
         visible={showUrl}

@@ -56,6 +56,11 @@ body {
     @apply max-w-full;
   }
 
+  .common.one,
+  .common.two {
+    @apply mt-[35px]
+  }
+
   .common h1:before {
     @apply content-["📔"] mr-2;
   }

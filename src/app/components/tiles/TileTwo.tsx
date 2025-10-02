@@ -8,7 +8,7 @@ type Props = {
 export default function TileTwo({ html, open, onToggleSize, widthVW }: Props) {
   return (
     <div
-      className={`common fixed right-0 top-0 z-[2] bg-slate-100  ${
+      className={`common two fixed right-0 top-0 z-[2] bg-slate-100  ${
         open
           ? "opacity-100 pointer-events-auto h-screen p-8"
           : "opacity-0 pointer-events-none h-screen p-8"
