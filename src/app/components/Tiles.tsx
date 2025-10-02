@@ -34,6 +34,23 @@ export default function Tiles({
   const [topVH, setTopVH] = useState(100);
   const rightVW = 100 - leftVW;
 
+  // PanelOne が非表示のときの幅配分（重なり防止）
+  const twoWidthWhenOneHidden = !openOne
+    ? openTwo && openThree
+      ? 40
+      : openTwo
+      ? 100
+      : 0
+    : rightVW;
+  const threeWidthWhenOneHidden = !openOne
+    ? openTwo && openThree
+      ? 60
+      : openThree
+      ? 100
+      : 0
+    : leftVW;
+  const threeTopWhenOneHidden = !openOne ? 0 : topVH;
+
   const dragging = useRef(false);
   const draggingH = useRef(false);
   const prevOpenTwo = useRef(openTwo);
@@ -106,30 +123,34 @@ export default function Tiles({
         heightVH={topVH}
         visible={openOne}
       />
-      <div
-        className="fixed top-0 left-0 h-screen z-[5] cursor-col-resize"
-        style={{ left: `${leftVW}vw`, width: 8 }}
-        onMouseDown={onMouseDown}
-      />
+      {openOne && (
+        <div
+          className="fixed top-0 left-0 h-screen z-[5] cursor-col-resize"
+          style={{ left: `${leftVW}vw`, width: 8 }}
+          onMouseDown={onMouseDown}
+        />
+      )}
       <TileTwo
         html={htmlTwo}
         open={openTwo}
         onToggleSize={onToggleTwo}
-        widthVW={rightVW}
+        widthVW={twoWidthWhenOneHidden}
       />
       <TileThree
         html={htmlThree}
         open={openThree}
         onToggleSize={onToggleThree}
-        widthVW={leftVW}
-        topHeightVH={topVH}
+        widthVW={threeWidthWhenOneHidden}
+        topHeightVH={threeTopWhenOneHidden}
       />
       <TileFour html={htmlFour} open={openFour} widthVW={leftVW} />
-      <div
-        className="fixed left-0 z-[6] cursor-row-resize bg-transparent"
-        style={{ top: `${topVH}vh`, height: 8, width: `${leftVW}vw` }}
-        onMouseDown={onMouseDownH}
-      />
+      {openOne && (
+        <div
+          className="fixed left-0 z-[6] cursor-row-resize bg-transparent"
+          style={{ top: `${topVH}vh`, height: 8, width: `${leftVW}vw` }}
+          onMouseDown={onMouseDownH}
+        />
+      )}
     </>
   );
 }

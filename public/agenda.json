@@ -1,0 +1,16 @@
+[
+  {
+    "course": "CSS基礎知識",
+    "chapters": [
+      {
+        "title": "CSSとは",
+        "urls": [
+          "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part1/01_css.md",
+          "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part1/02_css.md",
+          "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part1/03_css.md",
+          "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part1/04_css.md"
+        ]
+      }
+    ]
+  }
+]
