@@ -17,6 +17,7 @@ type Props = {
   onToggleTwo: () => void;
   onToggleThree: () => void;
   layoutVersion?: number;
+  fadeEnabled?: boolean;
 };
 
 export default function Tiles({
@@ -31,6 +32,7 @@ export default function Tiles({
   onToggleTwo,
   onToggleThree,
   layoutVersion = 0,
+  fadeEnabled = true,
 }: Props) {
   const [leftVW, setLeftVW] = useState(100);
   const [topVH, setTopVH] = useState(100);
@@ -130,6 +132,7 @@ export default function Tiles({
         widthVW={leftVW}
         heightVH={topVH}
         visible={openOne}
+        fade={fadeEnabled}
       />
       {openOne && (
         <div
@@ -143,6 +146,7 @@ export default function Tiles({
         open={openTwo}
         onToggleSize={onToggleTwo}
         widthVW={twoWidthWhenOneHidden}
+        fade={fadeEnabled}
       />
       <TileThree
         html={htmlThree}
@@ -150,8 +154,9 @@ export default function Tiles({
         onToggleSize={onToggleThree}
         widthVW={threeWidthWhenOneHidden}
         topHeightVH={threeTopWhenOneHidden}
+        fade={fadeEnabled}
       />
-      <TileFour html={htmlFour} open={openFour} />
+      <TileFour html={htmlFour} open={openFour} fade={fadeEnabled} />
       {openOne && (
         <div
           className="fixed left-0 z-[6] cursor-row-resize bg-transparent"

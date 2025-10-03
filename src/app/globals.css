@@ -28,7 +28,11 @@ body {
 
 @layer components {
   .common {
-    @apply p-8 z-[1] flex flex-col gap-4 overflow-y-scroll transition-opacity duration-500 ease-in-out;
+    @apply p-8 z-[1] flex flex-col gap-4 overflow-y-scroll;
+  }
+
+  .fade {
+    @apply transition-opacity duration-500 ease-in-out;
   }
 
   .common h1 {

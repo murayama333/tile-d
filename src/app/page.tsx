@@ -50,6 +50,13 @@ export default function Home() {
   const [openFour, setOpenFour] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [layoutVersion, setLayoutVersion] = useState(0);
+  const [fadeEnabled, setFadeEnabled] = useState(true);
+
+  const disableFadeTemporarily = useCallback(() => {
+    setFadeEnabled(false);
+    // 次フレームで再度フェードを有効化
+    setTimeout(() => setFadeEnabled(true), 0);
+  }, []);
 
   const fetchUrl = useCallback(async () => {
     if (!url) return;
@@ -89,6 +96,7 @@ export default function Home() {
   }, [agenda, courseIdx, chapterIdx, urlIdx]);
 
   const gotoNext = useCallback(() => {
+    disableFadeTemporarily();
     const c = agenda[courseIdx];
     if (!c) return;
     const ch = c.chapters[chapterIdx];
@@ -112,9 +120,10 @@ export default function Home() {
       setLayoutVersion((v) => v + 1);
       return;
     }
-  }, [agenda, courseIdx, chapterIdx, urlIdx]);
+  }, [agenda, courseIdx, chapterIdx, urlIdx, disableFadeTemporarily]);
 
   const gotoPrev = useCallback(() => {
+    disableFadeTemporarily();
     if (urlIdx - 1 >= 0) {
       setUrlIdx(urlIdx - 1);
       setOpenOne(true);
@@ -137,7 +146,7 @@ export default function Home() {
       setLayoutVersion((v) => v + 1);
       return;
     }
-  }, [agenda, courseIdx, chapterIdx, urlIdx]);
+  }, [agenda, courseIdx, chapterIdx, urlIdx, disableFadeTemporarily]);
 
   useEffect(() => {
     setMounted(true);
@@ -148,6 +157,7 @@ export default function Home() {
       if (e.altKey) {
         e.preventDefault();
         if (e.code === "Digit0" || e.code === "Numpad0") {
+          disableFadeTemporarily();
           setOpenOne(true);
           setOpenTwo(false);
           setOpenThree(false);
@@ -343,6 +353,7 @@ export default function Home() {
         onToggleTwo={toggleTwoSize}
         onToggleThree={toggleThreeSize}
         layoutVersion={layoutVersion}
+        fadeEnabled={fadeEnabled}
       />
     </div>
   );
