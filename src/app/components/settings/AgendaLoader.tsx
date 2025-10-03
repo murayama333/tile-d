@@ -64,10 +64,11 @@ export const AgendaLoader = ({
         if (url) localStorage.setItem("agendaUrl", url);
         else localStorage.removeItem("agendaUrl");
       } catch {}
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : "";
       setError(
-        e?.message
-          ? `読み込みに失敗しました: ${e.message}`
+        message
+          ? `読み込みに失敗しました: ${message}`
           : "読み込みに失敗しました"
       );
       // 失敗時は agenda を空に

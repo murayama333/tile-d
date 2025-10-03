@@ -210,7 +210,15 @@ export default function Home() {
     };
     window.addEventListener("keydown", keydown);
     return () => window.removeEventListener("keydown", keydown);
-  }, [openOne, openTwo, openThree, openFour, gotoNext, gotoPrev]);
+  }, [
+    openOne,
+    openTwo,
+    openThree,
+    openFour,
+    gotoNext,
+    gotoPrev,
+    disableFadeTemporarily,
+  ]);
 
   const parsed: Parsed = useMemo(() => {
     const parts = raw.split(/^##\s/m);
