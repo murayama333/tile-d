@@ -47,7 +47,6 @@ export default function TileThree({
             top: `${topHeightVH}vh`,
             height: `${100 - topHeightVH}vh`,
           }}
-          contentEditable={false}
           onDoubleClick={onToggleSize}
           dangerouslySetInnerHTML={{ __html: html }}
         ></div>
@@ -69,7 +68,6 @@ export default function TileThree({
         >
           <div
             className="common bg-slate-200 text-white h-full"
-            contentEditable={false}
             onDoubleClick={onToggleSize}
             dangerouslySetInnerHTML={{ __html: html }}
           />

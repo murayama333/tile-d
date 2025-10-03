@@ -45,7 +45,6 @@ export default function TileOne({
             }`
       }`}
       style={{ width: `${widthVW}vw`, height: `${heightVH}vh` }}
-      contentEditable={false}
       dangerouslySetInnerHTML={{ __html: html }}
     ></div>
   );

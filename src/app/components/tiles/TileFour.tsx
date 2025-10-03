@@ -21,7 +21,6 @@ export default function TileFour({
               ? "opacity-95 pointer-events-auto p-8"
               : "opacity-0 pointer-events-none p-8"
           }`}
-          contentEditable={true}
           dangerouslySetInnerHTML={{ __html: html }}
         ></div>
       ) : (
@@ -35,7 +34,6 @@ export default function TileFour({
         >
           <div
             className="common bg-teal-950 justify-center text-white p-8 h-full"
-            contentEditable={true}
             dangerouslySetInnerHTML={{ __html: html }}
           />
         </div>

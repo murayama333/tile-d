@@ -41,7 +41,6 @@ export default function TileTwo({
               : "opacity-0 pointer-events-none h-screen"
           }`}
           style={{ width: `${widthVW}vw` }}
-          contentEditable={false}
           onDoubleClick={onToggleSize}
           dangerouslySetInnerHTML={{ __html: html }}
         ></div>
@@ -58,7 +57,6 @@ export default function TileTwo({
         >
           <div
             className="common two bg-slate-100 p-8 h-full"
-            contentEditable={false}
             onDoubleClick={onToggleSize}
             dangerouslySetInnerHTML={{ __html: html }}
           />

@@ -233,6 +233,35 @@ export default function Home() {
   }, [raw]);
 
   useEffect(() => {
+    // a/img の安全属性を強制付与するレンダラ
+    const escapeAttr = (s: string) =>
+      s
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+
+    marked.use({
+      renderer: {
+        link({ href, title, tokens }) {
+          const safeHref = href ?? "#";
+          const titleAttr = title ? ` title="${escapeAttr(title)}"` : "";
+          const text = this.parser.parseInline(tokens);
+          return `<a href="${escapeAttr(
+            safeHref
+          )}" target="_blank" rel="noopener noreferrer ugc"${titleAttr}>${text}</a>`;
+        },
+        image({ href, title, text }) {
+          const safeSrc = href ?? "";
+          const titleAttr = title ? ` title="${escapeAttr(title)}"` : "";
+          const altAttr = text ? ` alt="${escapeAttr(text)}"` : ' alt=""';
+          return `<img src="${escapeAttr(
+            safeSrc
+          )}"${altAttr} loading="lazy" decoding="async" referrerpolicy="no-referrer"${titleAttr} />`;
+        },
+      },
+    });
+
     marked.use(
       markedHighlight({
         langPrefix: "hljs language-",
