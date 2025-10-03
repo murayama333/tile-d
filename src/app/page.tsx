@@ -158,7 +158,7 @@ export default function Home() {
         e.preventDefault();
         if (e.code === "Digit0" || e.code === "Numpad0") {
           disableFadeTemporarily();
-          setOpenOne(true);
+          setOpenOne(false);
           setOpenTwo(false);
           setOpenThree(false);
           setOpenFour(false);
