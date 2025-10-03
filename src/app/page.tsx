@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { marked } from "marked";
+import DOMPurify from "dompurify";
 import { markedHighlight } from "marked-highlight";
 import hljs from "highlight.js";
 import UrlInput from "./components/UrlInput";
@@ -239,7 +240,14 @@ export default function Home() {
 
   const html = useMemo(() => {
     if (!mounted) return { one: "", two: "", three: "", four: "" };
-    const render = (md: string) => marked.parse(md) as string;
+    const render = (md: string) => {
+      const rawHtml = marked.parse(md) as string;
+      // DOMPurify でサニタイズ（危険なスキームやイベント属性を除去）
+      return DOMPurify.sanitize(rawHtml, {
+        ALLOWED_URI_REGEXP: /^(?:(?:https?|data:image\/[^;]+;base64,))/i,
+        ADD_ATTR: ["target", "rel", "loading", "decoding", "referrerpolicy"],
+      }) as string;
+    };
     return {
       one: render(parsed.one),
       two: render(parsed.two),
