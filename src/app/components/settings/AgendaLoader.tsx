@@ -1,5 +1,6 @@
+"use client";
 import { Agenda } from "@/app/page";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Props = {
   open: boolean;
@@ -16,10 +17,58 @@ export const AgendaLoader = ({
   loadAgenda,
   agenda,
 }: Props) => {
+  const [titles, setTitles] = useState<Record<string, string>>({});
+
   useEffect(() => {
     if (!open) return;
     loadAgenda();
   }, [open, url, loadAgenda]);
+
+  const allUrls = useMemo(() => {
+    const list: string[] = [];
+    for (const course of agenda) {
+      for (const ch of course.chapters) {
+        for (const u of ch.urls) list.push(u);
+      }
+    }
+    return list;
+  }, [agenda]);
+
+  useEffect(() => {
+    if (!open) return;
+    const controller = new AbortController();
+    const missing = allUrls.filter((u) => titles[u] === undefined);
+    if (missing.length === 0) return;
+    const fetchOne = async (u: string) => {
+      try {
+        const res = await fetch(u, {
+          cache: "force-cache",
+          signal: controller.signal,
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        const text = await res.text();
+        const m = text.match(/^#\s+(.+)$/m);
+        const title = (m?.[1] ?? u).trim();
+        return [u, title] as const;
+      } catch {
+        return [u, u] as const;
+      }
+    };
+    (async () => {
+      const results = await Promise.allSettled(missing.map(fetchOne));
+      const merged: Record<string, string> = {};
+      for (const r of results) {
+        if (r.status === "fulfilled") {
+          const [u, t] = r.value;
+          merged[u] = t;
+        }
+      }
+      if (!controller.signal.aborted && Object.keys(merged).length > 0) {
+        setTitles((prev) => ({ ...prev, ...merged }));
+      }
+    })();
+    return () => controller.abort();
+  }, [open, allUrls, titles]);
   return (
     <div className={`p-4 ${open ? "block" : "hidden"}`}>
       <div className="flex gap-2 items-center mb-2">
@@ -50,7 +99,7 @@ export const AgendaLoader = ({
                           rel="noopener noreferrer"
                           className="underline"
                         >
-                          {u}
+                          {titles[u] ?? "読み込み中..."}
                         </a>
                       </div>
                     ))}
