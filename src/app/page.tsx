@@ -41,12 +41,9 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [layoutVersion, setLayoutVersion] = useState(0);
 
-  const defaultMdUrl =
-    "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part1/01.md";
-
   const fetchUrl = useCallback(async () => {
-    const target = url === "" ? defaultMdUrl : url;
-    const response = await fetch(target);
+    if (!url) return;
+    const response = await fetch(url);
     const text = await response.text();
     setRaw(text);
   }, [url]);
@@ -54,6 +51,8 @@ export default function Home() {
   useEffect(() => {
     fetchUrl();
   }, [fetchUrl]);
+
+  // 初期表示および agendaUrl 変更時に agenda を取得（定義の後で呼ぶ）
   const loadAgenda = useCallback(async () => {
     try {
       const res = await fetch(agendaUrl, { cache: "no-store" });
@@ -229,6 +228,11 @@ export default function Home() {
       four: render(parsed.four),
     };
   }, [parsed, mounted]);
+
+  // 初期表示および agendaUrl 変更時に agenda を取得
+  useEffect(() => {
+    loadAgenda();
+  }, [loadAgenda]);
 
   useEffect(() => {
     if (!mounted) return;
