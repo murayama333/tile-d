@@ -259,6 +259,34 @@ export default function Home() {
     return count + Math.min(urlIdx + 1, within);
   }, [agenda, courseIdx, chapterIdx, urlIdx]);
 
+  const goToSlide = useCallback(
+    (n: number) => {
+      const c = agenda[courseIdx];
+      if (!c || n <= 0) return;
+      let remain = Math.min(
+        n,
+        c.chapters.reduce((s, ch) => s + (ch.urls?.length ?? 0), 0)
+      );
+      let chIdx = 0;
+      while (chIdx < c.chapters.length) {
+        const len = c.chapters[chIdx]?.urls?.length ?? 0;
+        if (remain <= len) {
+          setChapterIdx(chIdx);
+          setUrlIdx(Math.max(0, remain - 1));
+          setOpenOne(true);
+          setOpenTwo(false);
+          setOpenThree(false);
+          setOpenFour(false);
+          setLayoutVersion((v) => v + 1);
+          return;
+        }
+        remain -= len;
+        chIdx++;
+      }
+    },
+    [agenda, courseIdx]
+  );
+
   const toggleTwoSize = useCallback(() => {
     // 100vw/100vh <-> 40vw/100vh 相当の切替は、ここでは open 状態のままにして、
     // 実装簡略化のためサイズ固定のままとします。必要なら state を増やして切替可能です。
@@ -278,6 +306,7 @@ export default function Home() {
         chapterTitle={chapterTitle}
         slideTotal={slideTotal}
         slideCurrent={slideCurrent}
+        onChangeSlide={goToSlide}
       />
       <UrlInput
         url={url}

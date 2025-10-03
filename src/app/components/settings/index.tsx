@@ -13,6 +13,7 @@ type Props = {
   chapterTitle: string;
   slideTotal: number;
   slideCurrent: number;
+  onChangeSlide: (n: number) => void;
 };
 
 export const Settings = ({
@@ -24,6 +25,7 @@ export const Settings = ({
   chapterTitle,
   slideTotal,
   slideCurrent,
+  onChangeSlide,
 }: Props) => {
   const [openAgendaLoader, setOpenAgendaLoader] = useState(false);
 
@@ -35,9 +37,26 @@ export const Settings = ({
             SLIDE-D
           </button>
         </div>
-        <p>
-          {courseTitle} - {chapterTitle} - {slideCurrent}/{slideTotal}
-        </p>
+        <div className="flex items-center gap-2">
+          <span>
+            {courseTitle} - {chapterTitle}
+          </span>
+          <div className="flex items-center gap-1">
+            <input
+              type="number"
+              className="w-16 text-black px-1 py-0.5 rounded"
+              min={1}
+              max={Math.max(1, slideTotal)}
+              value={slideCurrent}
+              onChange={(e) => {
+                const v = Number(e.target.value);
+                if (Number.isFinite(v)) onChangeSlide(v);
+              }}
+              disabled={slideTotal === 0}
+            />
+            <span>/ {slideTotal}</span>
+          </div>
+        </div>
       </div>
 
       <div className="flex gap-2 flex-col items-end">
