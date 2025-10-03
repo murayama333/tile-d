@@ -106,16 +106,17 @@ export const AgendaLoader = ({
 
   return (
     <div
-      className={`p-4 max-h-[50vh] overflow-y-scroll ${
+      className={`p-4 mt-2 bg-white h-[calc(100vh-35px-4px)] overflow-y-scroll ${
         open ? "block" : "hidden"
       }`}
     >
-      <div className="flex gap-2 items-center mb-2">
+      <div className="flex gap-2 items-center mb-4">
         <input
           type="text"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          className="px-2 py-1 border border-slate-500 rounded w-[480px] max-w-[70vw]"
+          className="px-2 py-2 text-slate-800 border border-slate-300 rounded w-[45vw] max-w-[70vw] placeholder:text-slate-500 font-bold"
+          placeholder="アジェンダページのURLを入力してください"
         />
         <button
           onClick={() => {
@@ -125,20 +126,20 @@ export const AgendaLoader = ({
               else localStorage.removeItem("agendaUrl");
             } catch {}
           }}
-          className="px-3 py-1 rounded bg-slate-800"
+          className="px-4 py-2 rounded bg-teal-950 border border-slate-300"
         >
-          Load
+          start
         </button>
       </div>
-      <div className="space-y-2">
+      <div>
         {agenda.map((item) => (
           <div key={item.course}>
             <h2 className="font-semibold">{item.course}</h2>
-            <div className="ml-2 space-y-1">
+            <div className="ml-4 space-y-4">
               {item.chapters.map((chapter) => (
                 <div key={chapter.title}>
                   <h3 className="font-medium">{chapter.title}</h3>
-                  <div className="ml-2">
+                  <div className="ml-4">
                     {chapter.urls.map((u) => {
                       const n = slideIndexByCourse[item.course]?.[u];
                       return (

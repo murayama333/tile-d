@@ -30,8 +30,8 @@ export const Settings = ({
   const [openAgendaLoader, setOpenAgendaLoader] = useState(false);
 
   return (
-    <div className="fixed top-0 left-0 w-full min-h-[35px] bg-teal-800 text-white text-sm py-2 px-4 overflow-y-auto z-[100] flex flex-col gap-x-2 justify-center">
-      <div className="flex justify-between gap-2 items-center">
+    <div className="fixed top-0 left-0 w-full min-h-[35px] bg-teal-950 text-white text-sm py-2 overflow-y-auto z-[100] flex flex-col justify-center">
+      <div className="flex justify-between gap-2 items-center px-4">
         <div className="font-bold flex gap-2 items-center">
           <button onClick={() => setOpenAgendaLoader((v) => !v)}>
             SLIDE-D
@@ -56,17 +56,15 @@ export const Settings = ({
           <span>/ {slideTotal}</span>
         </div>
       </div>
-      <div className="flex gap-2 flex-col">
-        <AgendaLoader
-          open={openAgendaLoader}
-          url={url}
-          setUrl={setUrl}
-          loadAgenda={loadAgenda}
-          agenda={agenda}
-          onChangeSlide={onChangeSlide}
-          onClose={() => setOpenAgendaLoader(false)}
-        />
-      </div>
+      <AgendaLoader
+        open={openAgendaLoader}
+        url={url}
+        setUrl={setUrl}
+        loadAgenda={loadAgenda}
+        agenda={agenda}
+        onChangeSlide={onChangeSlide}
+        onClose={() => setOpenAgendaLoader(false)}
+      />
     </div>
   );
 };
