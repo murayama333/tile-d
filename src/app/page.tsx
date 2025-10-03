@@ -87,6 +87,10 @@ export default function Home() {
     }
   }, [agendaUrl]);
 
+  const clearAgenda = useCallback(() => {
+    setAgenda([]);
+  }, []);
+
   // When navigation indices change, update url/raw by fetching the selected md
   useEffect(() => {
     const selected = agenda[courseIdx]?.chapters[chapterIdx]?.urls?.[urlIdx];
@@ -321,6 +325,7 @@ export default function Home() {
         setUrl={setAgendaUrl}
         agenda={agenda}
         loadAgenda={loadAgenda}
+        clearAgenda={clearAgenda}
         courseTitle={courseTitle}
         chapterTitle={chapterTitle}
         slideTotal={slideTotal}

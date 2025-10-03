@@ -1,6 +1,6 @@
 "use client";
 import { Agenda } from "@/app/page";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type Props = {
   open: boolean;
@@ -8,6 +8,7 @@ type Props = {
   setUrl: (v: string) => void;
   agenda: Agenda[];
   loadAgenda: () => void;
+  clearAgenda: () => void;
   onChangeSlide: (n: number) => void;
   onClose: () => void;
 };
@@ -17,11 +18,19 @@ export const AgendaLoader = ({
   url,
   setUrl,
   loadAgenda,
+  clearAgenda,
   agenda,
   onChangeSlide,
   onClose,
 }: Props) => {
   const [titles, setTitles] = useState<Record<string, string>>({});
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const demoDisplayUrl =
+    "https://github.com/murayama333/md2slide/blob/main/md/css/agenda.json";
+  const demoFetchUrl =
+    "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/agenda.json";
 
   // Loadボタン押下時に保存する方針に変更（テキスト変更では保存しない）
 
@@ -37,6 +46,36 @@ export const AgendaLoader = ({
   }, []);
 
   // 自動フェッチは行わない（Loadボタンでのみフェッチ）
+  const checkAndLoad = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+      const data = await res.json();
+      if (!Array.isArray(data)) {
+        throw new Error("JSON の形式が不正です（配列ではありません）");
+      }
+      // 形式OKなら本体のロード関数を実行
+      loadAgenda();
+      try {
+        if (url) localStorage.setItem("agendaUrl", url);
+        else localStorage.removeItem("agendaUrl");
+      } catch {}
+    } catch (e: any) {
+      setError(
+        e?.message
+          ? `読み込みに失敗しました: ${e.message}`
+          : "読み込みに失敗しました"
+      );
+      // 失敗時は agenda を空に
+      clearAgenda();
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // すべての URL をフラット化
   const allUrls = useMemo(() => {
@@ -106,32 +145,55 @@ export const AgendaLoader = ({
 
   return (
     <div
-      className={`p-4 mt-2 bg-white h-[calc(100vh-35px-4px)] overflow-y-scroll ${
+      className={`p-4 mt-2 bg-white text-slate-950 h-[calc(100vh-35px-4px)] overflow-y-scroll ${
         open ? "block" : "hidden"
       }`}
     >
-      <div className="flex gap-2 items-center mb-4">
+      <div className="flex gap-2 items-center mb-2">
         <input
           type="text"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          className="px-2 py-2 text-slate-800 border border-slate-300 rounded w-[45vw] max-w-[70vw] placeholder:text-slate-500 font-bold"
+          className="px-2 py-2 text-slate-800 border border-slate-300 rounded w-[60vw] max-w-[70vw] placeholder:text-slate-500 font-bold"
           placeholder="アジェンダページのURLを入力してください"
+          ref={inputRef}
         />
         <button
-          onClick={() => {
-            loadAgenda();
-            try {
-              if (url) localStorage.setItem("agendaUrl", url);
-              else localStorage.removeItem("agendaUrl");
-            } catch {}
-          }}
-          className="px-4 py-2 rounded bg-teal-950 border border-slate-300"
+          onClick={checkAndLoad}
+          disabled={loading}
+          className={`px-4 py-2 rounded border border-slate-300 text-white ${
+            loading ? "bg-slate-400 cursor-not-allowed" : "bg-slate-950"
+          }`}
         >
-          start
+          {loading ? "loading..." : "start"}
         </button>
       </div>
+      {error && (
+        <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
+          {error}
+        </div>
+      )}
       <div>
+        {agenda.length === 0 && (
+          <div className="text-center text-slate-500">
+            アジェンダが読み込まれていません。
+            <br />
+            デモ用スライドのURL：
+            <br />
+            <a
+              href={demoDisplayUrl}
+              className="underline text-blue-600"
+              onClick={(e) => {
+                e.preventDefault();
+                setError("");
+                setUrl(demoFetchUrl);
+                setTimeout(() => inputRef.current?.focus(), 0);
+              }}
+            >
+              {demoDisplayUrl}
+            </a>
+          </div>
+        )}
         {agenda.map((item) => (
           <div key={item.course}>
             <h2 className="font-semibold">{item.course}</h2>

@@ -9,6 +9,7 @@ type Props = {
   setUrl: (v: string) => void;
   agenda: Agenda[];
   loadAgenda: () => void;
+  clearAgenda: () => void;
   courseTitle: string;
   chapterTitle: string;
   slideTotal: number;
@@ -21,6 +22,7 @@ export const Settings = ({
   setUrl,
   agenda,
   loadAgenda,
+  clearAgenda,
   courseTitle,
   chapterTitle,
   slideTotal,
@@ -37,7 +39,9 @@ export const Settings = ({
             SLIDE-D
           </button>
           <div onClick={() => setOpenAgendaLoader((v) => !v)}>
-            {courseTitle} - {chapterTitle}
+            {agenda.length === 0
+              ? "IT講師のための.mdファイルをスライドに変換するツール"
+              : `${courseTitle} - ${chapterTitle}`}
           </div>
         </div>
         <div className="flex items-center gap-1">
@@ -61,6 +65,7 @@ export const Settings = ({
         url={url}
         setUrl={setUrl}
         loadAgenda={loadAgenda}
+        clearAgenda={clearAgenda}
         agenda={agenda}
         onChangeSlide={onChangeSlide}
         onClose={() => setOpenAgendaLoader(false)}
