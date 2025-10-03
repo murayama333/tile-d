@@ -43,7 +43,7 @@ export const Settings = ({
         <div className="flex items-center gap-1">
           <input
             type="number"
-            className="w-12 px-1 py-0.5 text-center"
+            className="w-8 px-1 py-0.5 text-right"
             min={1}
             max={Math.max(1, slideTotal)}
             value={slideCurrent}

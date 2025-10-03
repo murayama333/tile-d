@@ -31,6 +31,18 @@ body {
     @apply p-8 z-[1] flex flex-col gap-4 overflow-y-scroll;
   }
 
+  /* number input の上下スピンボタンを非表示にする */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
   .fade {
     @apply transition-opacity duration-500 ease-in-out;
   }
