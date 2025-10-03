@@ -147,6 +147,7 @@ export default function Tiles({
         onToggleSize={onToggleTwo}
         widthVW={twoWidthWhenOneHidden}
         fade={fadeEnabled}
+        effect="reveal"
       />
       <TileThree
         html={htmlThree}

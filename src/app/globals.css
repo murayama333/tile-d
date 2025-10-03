@@ -35,6 +35,25 @@ body {
     @apply transition-opacity duration-500 ease-in-out;
   }
 
+  /* TileTwo 用のリビール（中央から上下に開く）*/
+  .reveal-base {
+    @apply transition-transform transition-opacity duration-1000 ease-in-out origin-center;
+    transform-origin: center;
+    backface-visibility: hidden;
+  }
+
+  .reveal-open {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+
+  .reveal-closed {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+
+  /* tv-on animation removed */
+
   .common h1 {
     @apply text-[2rem] font-bold;
   }
