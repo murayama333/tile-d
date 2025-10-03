@@ -156,6 +156,7 @@ export default function Tiles({
         widthVW={threeWidthWhenOneHidden}
         topHeightVH={threeTopWhenOneHidden}
         fade={fadeEnabled}
+        effect="reveal"
       />
       <TileFour html={htmlFour} open={openFour} fade={fadeEnabled} />
       {openOne && (

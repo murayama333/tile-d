@@ -54,7 +54,7 @@ body {
 
   /* 二段階リビール: 点 -> 横線 -> 全面 */
   .reveal-seq {
-    animation: reveal-dot-line 250ms ease-out 1, reveal-line-full 750ms ease-out 1 250ms;
+    animation: reveal-dot-line 350ms ease-out 1, reveal-line-full 500ms ease-out 1 350ms;
   }
 
   /* ステップ1: 中央の点が左右に横線へ（横方向拡大、縦は極小のまま） */
