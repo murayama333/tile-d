@@ -146,106 +146,107 @@ export const AgendaLoader = ({
   return (
     <div
       className={`p-4 mt-2 bg-white text-slate-950 h-[calc(100vh-35px-4px)] overflow-y-scroll ${
-        open ? "block" : "hidden"
+        open ? "flex flex-col items-center" : "hidden"
       }`}
     >
-      <div className="flex gap-2 items-center mb-2">
-        <input
-          type="text"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          className="px-2 py-2 text-slate-800 border border-slate-300 rounded w-[60vw] max-w-[70vw] placeholder:text-slate-500 font-bold"
-          placeholder="アジェンダページのURLを入力してください"
-          ref={inputRef}
-        />
-        <button
-          onClick={checkAndLoad}
-          disabled={loading}
-          className={`px-4 py-2 rounded border border-slate-300 text-white ${
-            loading ? "bg-slate-400 cursor-not-allowed" : "bg-slate-950"
-          }`}
-        >
-          {loading ? "loading..." : "start"}
-        </button>
-      </div>
-      {error && (
-        <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
-          {error}
+      <div className="flex flex-col gap-4 w-[60vw]">
+        <div className="flex gap-2 items-center">
+          <input
+            type="text"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            className="px-2 py-2 text-slate-800 border border-slate-300 rounded w-full placeholder:text-slate-500 font-bold"
+            placeholder="アジェンダページのURLを入力してください"
+            ref={inputRef}
+          />
+          <button
+            onClick={checkAndLoad}
+            disabled={loading}
+            className={`px-4 py-2 rounded border border-slate-300 text-white ${
+              loading ? "bg-slate-400 cursor-not-allowed" : "bg-slate-950"
+            }`}
+          >
+            {loading ? "loading..." : "start"}
+          </button>
         </div>
-      )}
-      <div>
-        {agenda.length === 0 && (
-          <div className="text-center text-slate-500">
-            アジェンダが読み込まれていません。
-            <br />
-            デモ用スライドのURL：
-            <br />
-            <a
-              href={demoDisplayUrl}
-              className="underline text-blue-600"
-              onClick={(e) => {
-                e.preventDefault();
-                setError("");
-                setUrl(demoFetchUrl);
-                setTimeout(() => inputRef.current?.focus(), 0);
-              }}
-            >
-              {demoDisplayUrl}
-            </a>
+        {error && (
+          <div className="mt-2 w-full text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
+            {error}
           </div>
         )}
-        {agenda.map((item) => (
-          <div key={item.course}>
-            <h2 className="font-semibold">{item.course}</h2>
-            <div className="ml-4 space-y-4">
-              {item.chapters.map((chapter) => (
-                <div key={chapter.title}>
-                  <h3 className="font-medium">{chapter.title}</h3>
-                  <div className="ml-4">
-                    {chapter.urls.map((u) => {
-                      const n = slideIndexByCourse[item.course]?.[u];
-                      return (
-                        <div key={u} className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            className="underline text-left hover:opacity-90"
-                            onClick={() => {
-                              if (typeof n === "number") {
-                                onChangeSlide(n);
-                                onClose();
-                              }
-                            }}
-                          >
-                            {titles[u] ?? "読み込み中..."}
-                          </button>
-                          <a
-                            href={u}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label="外部リンク"
-                            className="inline-flex items-center opacity-80 hover:opacity-100"
-                            title="外部リンクを開く"
-                          >
-                            <svg
-                              width="14"
-                              height="14"
-                              viewBox="0 0 24 24"
-                              fill="currentColor"
-                              aria-hidden
-                            >
-                              <path d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3z"></path>
-                              <path d="M5 5h7v2H7v10h10v-5h2v7H5V5z"></path>
-                            </svg>
-                          </a>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
+        <div className="flex w-full">
+          {agenda.length === 0 && (
+            <div className="text-center text-slate-500 space-y-2 w-full">
+              <p>アジェンダが読み込まれていません。</p>
+              <p>
+                <a
+                  href={demoDisplayUrl}
+                  className="underline text-blue-600"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setError("");
+                    setUrl(demoFetchUrl);
+                    setTimeout(() => inputRef.current?.focus(), 0);
+                  }}
+                >
+                  デモ用スライドのURLはこちらです
+                </a>
+              </p>
             </div>
-          </div>
-        ))}
+          )}
+          {agenda.map((item) => (
+            <div key={item.course}>
+              <h2 className="font-semibold">{item.course}</h2>
+              <div className="ml-4 space-y-4">
+                {item.chapters.map((chapter) => (
+                  <div key={chapter.title}>
+                    <h3 className="font-medium">{chapter.title}</h3>
+                    <div className="ml-4">
+                      {chapter.urls.map((u) => {
+                        const n = slideIndexByCourse[item.course]?.[u];
+                        return (
+                          <div key={u} className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              className="underline text-left hover:opacity-90"
+                              onClick={() => {
+                                if (typeof n === "number") {
+                                  onChangeSlide(n);
+                                  onClose();
+                                }
+                              }}
+                            >
+                              {titles[u] ?? "読み込み中..."}
+                            </button>
+                            <a
+                              href={u}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label="外部リンク"
+                              className="inline-flex items-center opacity-80 hover:opacity-100"
+                              title="外部リンクを開く"
+                            >
+                              <svg
+                                width="14"
+                                height="14"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                aria-hidden
+                              >
+                                <path d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3z"></path>
+                                <path d="M5 5h7v2H7v10h10v-5h2v7H5V5z"></path>
+                              </svg>
+                            </a>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

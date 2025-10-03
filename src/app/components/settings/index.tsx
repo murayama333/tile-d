@@ -2,7 +2,7 @@
 
 import { Agenda } from "@/app/page";
 import { AgendaLoader } from "./AgendaLoader";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Props = {
   url: string;
@@ -31,6 +31,12 @@ export const Settings = ({
 }: Props) => {
   const [openAgendaLoader, setOpenAgendaLoader] = useState(false);
 
+  // 初回起動で URL が空欄なら AgendaLoader を開いておく
+  useEffect(() => {
+    if (!url) setOpenAgendaLoader(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="fixed top-0 left-0 w-full min-h-[35px] bg-teal-950 text-white text-sm py-2 overflow-y-auto z-[100] flex flex-col justify-center">
       <div className="flex justify-between gap-2 items-center px-4">
@@ -40,7 +46,7 @@ export const Settings = ({
           </button>
           <div onClick={() => setOpenAgendaLoader((v) => !v)}>
             {agenda.length === 0
-              ? "IT講師のための.mdファイルをスライドに変換するツール"
+              ? "IT講師のための .md ファイルをスライドに変換するツール"
               : `${courseTitle} - ${chapterTitle}`}
           </div>
         </div>

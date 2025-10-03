@@ -25,18 +25,16 @@ export default function Home() {
   const [raw, setRaw] = useState("");
   const [showUrl, setShowUrl] = useState(false);
   const [showContents, setShowContents] = useState(false);
-  // URL for agenda.json
-  const defaultAgendaUrl =
-    "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/agenda.json";
+  // Agenda URL（初期は空欄。localStorage に保存があれば復元）
   const [agendaUrl, setAgendaUrl] = useState(() => {
     try {
       const saved =
         typeof window !== "undefined"
           ? localStorage.getItem("agendaUrl")
           : null;
-      return saved ?? defaultAgendaUrl;
+      return saved ?? "";
     } catch {
-      return defaultAgendaUrl;
+      return "";
     }
   });
   // Agenda state and navigation
@@ -71,6 +69,10 @@ export default function Home() {
 
   // 初期表示および agendaUrl 変更時に agenda を取得（定義の後で呼ぶ）
   const loadAgenda = useCallback(async () => {
+    if (!agendaUrl) {
+      setAgenda([]);
+      return;
+    }
     try {
       const res = await fetch(agendaUrl, { cache: "no-store" });
       if (!res.ok) {
