@@ -36,7 +36,7 @@ export const Settings = ({
           <button onClick={() => setOpenAgendaLoader((v) => !v)}>
             SLIDE-D
           </button>
-          <div>
+          <div onClick={() => setOpenAgendaLoader((v) => !v)}>
             {courseTitle} - {chapterTitle}
           </div>
         </div>
