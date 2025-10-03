@@ -242,6 +242,11 @@ export default function Home() {
     };
   }, [parsed, mounted]);
 
+  const hasPanelThree = useMemo(() => {
+    // Markdown段階で空判定（改行や空白のみなら空扱い）
+    return parsed.three.replace(/\s+/g, "").length > 0;
+  }, [parsed.three]);
+
   // 初期表示時のみ agenda を取得（テキスト変更ではフェッチしない）
   useEffect(() => {
     loadAgenda();
@@ -341,7 +346,7 @@ export default function Home() {
         htmlFour={html.four}
         openOne={openOne}
         openTwo={openTwo}
-        openThree={openThree}
+        openThree={openThree && hasPanelThree}
         openFour={openFour}
         onToggleTwo={toggleTwoSize}
         onToggleThree={toggleThreeSize}
