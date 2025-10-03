@@ -52,6 +52,37 @@ body {
     opacity: 0;
   }
 
+  /* 二段階リビール: 点 -> 横線 -> 全面 */
+  .reveal-seq {
+    animation: reveal-dot-line 250ms ease-out 1, reveal-line-full 750ms ease-out 1 250ms;
+  }
+
+  /* ステップ1: 中央の点が左右に横線へ（横方向拡大、縦は極小のまま） */
+  @keyframes reveal-dot-line {
+    0% {
+      transform: translateZ(0) scaleX(0.02) scaleY(0.02);
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateZ(0) scaleX(1) scaleY(0.02);
+      opacity: 1;
+    }
+  }
+
+  /* ステップ2: 横線から縦に伸びて全面表示 */
+  @keyframes reveal-line-full {
+    0% {
+      transform: translateZ(0) scaleX(1) scaleY(0.02);
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateZ(0) scaleX(1) scaleY(1);
+      opacity: 1;
+    }
+  }
+
   /* tv-on animation removed */
 
   .common h1 {
