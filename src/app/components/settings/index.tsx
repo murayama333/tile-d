@@ -63,6 +63,8 @@ export const Settings = ({
           setUrl={setUrl}
           loadAgenda={loadAgenda}
           agenda={agenda}
+          onChangeSlide={onChangeSlide}
+          onClose={() => setOpenAgendaLoader(false)}
         />
       </div>
     </div>
