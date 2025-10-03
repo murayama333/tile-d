@@ -19,7 +19,7 @@ export default function TileThree({
     <div
       className={`common ${
         fade ? "fade" : ""
-      } bg-teal-600 text-white fixed left-0 z-[3] ${
+      } bg-slate-200 text-white fixed left-0 z-[3] ${
         open
           ? "opacity-100 pointer-events-auto"
           : "opacity-0 pointer-events-none"
