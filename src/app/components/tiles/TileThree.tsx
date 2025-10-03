@@ -32,28 +32,49 @@ export default function TileThree({
     prevOpen.current = open;
   }, [open, effect]);
   return (
-    <div
-      className={`common bg-slate-200 text-white fixed left-0 z-[3] overflow-hidden ${
-        effect === "fade"
-          ? `${fade ? "fade" : ""} ${
-              open
-                ? "opacity-100 pointer-events-auto"
-                : "opacity-0 pointer-events-none"
-            }`
-          : `reveal-base ${runReveal ? "reveal-seq" : ""} ${
-              open
-                ? "reveal-open pointer-events-auto"
-                : "reveal-closed pointer-events-none"
-            }`
-      }`}
-      style={{
-        width: `${widthVW}vw`,
-        top: `${topHeightVH}vh`,
-        height: `${100 - topHeightVH}vh`,
-      }}
-      contentEditable={false}
-      onDoubleClick={onToggleSize}
-      dangerouslySetInnerHTML={{ __html: html }}
-    ></div>
+    <>
+      {effect === "fade" ? (
+        <div
+          className={`common bg-slate-200 text-white fixed left-0 z-[3] ${
+            fade ? "fade" : ""
+          } ${
+            open
+              ? "opacity-100 pointer-events-auto"
+              : "opacity-0 pointer-events-none"
+          }`}
+          style={{
+            width: `${widthVW}vw`,
+            top: `${topHeightVH}vh`,
+            height: `${100 - topHeightVH}vh`,
+          }}
+          contentEditable={false}
+          onDoubleClick={onToggleSize}
+          dangerouslySetInnerHTML={{ __html: html }}
+        ></div>
+      ) : (
+        <div
+          className={`fixed left-0 z-[3] reveal-base ${
+            runReveal ? "reveal-seq" : ""
+          } ${
+            open
+              ? "reveal-open pointer-events-auto"
+              : "reveal-closed pointer-events-none"
+          }`}
+          style={{
+            width: `${widthVW}vw`,
+            top: `${topHeightVH}vh`,
+            height: `${100 - topHeightVH}vh`,
+            overflow: "hidden",
+          }}
+        >
+          <div
+            className="common bg-slate-200 text-white h-full"
+            contentEditable={false}
+            onDoubleClick={onToggleSize}
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
+        </div>
+      )}
+    </>
   );
 }
