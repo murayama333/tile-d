@@ -207,20 +207,13 @@ export default function Home() {
 
   const parsed: Parsed = useMemo(() => {
     const parts = raw.split(/^##\s/m);
-    const adjustFirstLine = (s: string) => {
-      if (s.startsWith("サンプルコード\n"))
-        return s.replace("サンプルコード\n", "");
-      if (s.startsWith("イメージ\n")) return s.replace("イメージ\n", "");
-      if (s.startsWith("実行結果\n")) return s.replace("実行結果\n", "");
-      if (s.startsWith("ポイント")) return s.replace("ポイント", "");
-      return s;
-    };
+    const removeFirstLine = (s: string) => s.replace(/^[^\n]*\n?/, "");
     const [p1 = "", p2 = "", p3 = "", p4 = ""] = parts;
     return {
-      one: adjustFirstLine(p1),
-      two: adjustFirstLine(p2),
-      three: adjustFirstLine(p3),
-      four: adjustFirstLine(p4),
+      one: p1,
+      two: removeFirstLine(p2),
+      three: removeFirstLine(p3),
+      four: removeFirstLine(p4),
     };
   }, [raw]);
 
