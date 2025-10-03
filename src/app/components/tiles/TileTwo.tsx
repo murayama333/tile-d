@@ -14,7 +14,7 @@ export default function TileTwo({ html, open, onToggleSize, widthVW }: Props) {
           : "opacity-0 pointer-events-none h-screen p-8"
       }`}
       style={{ width: `${widthVW}vw` }}
-      contentEditable={true}
+      contentEditable={false}
       onDoubleClick={onToggleSize}
       dangerouslySetInnerHTML={{ __html: html }}
     ></div>

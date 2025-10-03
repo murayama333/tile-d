@@ -23,11 +23,20 @@ export const AgendaLoader = ({
 }: Props) => {
   const [titles, setTitles] = useState<Record<string, string>>({});
 
-  // 開いているときだけ agenda を更新
+  // Loadボタン押下時に保存する方針に変更（テキスト変更では保存しない）
+
+  // 初期表示時にローカルストレージから復元
   useEffect(() => {
-    if (!open) return;
-    loadAgenda();
-  }, [open, url, loadAgenda]);
+    try {
+      const saved = localStorage.getItem("agendaUrl");
+      if (saved && saved !== url) {
+        setUrl(saved);
+      }
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // 自動フェッチは行わない（Loadボタンでのみフェッチ）
 
   // すべての URL をフラット化
   const allUrls = useMemo(() => {
@@ -78,6 +87,7 @@ export const AgendaLoader = ({
         return [u, u] as const;
       }
     };
+
     (async () => {
       const results = await Promise.allSettled(missing.map(fetchOne));
       const merged: Record<string, string> = {};
@@ -93,8 +103,13 @@ export const AgendaLoader = ({
     })();
     return () => controller.abort();
   }, [open, allUrls, titles]);
+
   return (
-    <div className={`p-4 ${open ? "block" : "hidden"}`}>
+    <div
+      className={`p-4 max-h-[50vh] overflow-y-scroll ${
+        open ? "block" : "hidden"
+      }`}
+    >
       <div className="flex gap-2 items-center mb-2">
         <input
           type="text"
@@ -102,7 +117,16 @@ export const AgendaLoader = ({
           onChange={(e) => setUrl(e.target.value)}
           className="px-2 py-1 border border-slate-500 rounded w-[480px] max-w-[70vw]"
         />
-        <button onClick={loadAgenda} className="px-3 py-1 rounded bg-slate-800">
+        <button
+          onClick={() => {
+            loadAgenda();
+            try {
+              if (url) localStorage.setItem("agendaUrl", url);
+              else localStorage.removeItem("agendaUrl");
+            } catch {}
+          }}
+          className="px-3 py-1 rounded bg-slate-800"
+        >
           Load
         </button>
       </div>

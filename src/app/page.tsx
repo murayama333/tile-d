@@ -28,7 +28,17 @@ export default function Home() {
   // URL for agenda.json
   const defaultAgendaUrl =
     "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/agenda.json";
-  const [agendaUrl, setAgendaUrl] = useState(defaultAgendaUrl);
+  const [agendaUrl, setAgendaUrl] = useState(() => {
+    try {
+      const saved =
+        typeof window !== "undefined"
+          ? localStorage.getItem("agendaUrl")
+          : null;
+      return saved ?? defaultAgendaUrl;
+    } catch {
+      return defaultAgendaUrl;
+    }
+  });
   // Agenda state and navigation
   const [agenda, setAgenda] = useState<Agenda[]>([]);
   const [courseIdx] = useState(0);
@@ -229,10 +239,11 @@ export default function Home() {
     };
   }, [parsed, mounted]);
 
-  // 初期表示および agendaUrl 変更時に agenda を取得
+  // 初期表示時のみ agenda を取得（テキスト変更ではフェッチしない）
   useEffect(() => {
     loadAgenda();
-  }, [loadAgenda]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!mounted) return;
