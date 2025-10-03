@@ -5,15 +5,25 @@
       {
         "title": "Part1: CSSとは",
         "urls": [
-          "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part1/01_css.md",
-          "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part1/02_css.md"
+          "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part1/01.md",
+          "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part1/02.md",
+          "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part1/03.md",
+          "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part1/04.md",
+          "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part1/05.md",
+          "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part1/06.md",
+          "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part1/07.md"
         ]
       },
       {
-        "title": "Part2: CSSの基本構文",
+        "title": "Part2: セレクタ",
         "urls": [
-          "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part1/03_css.md",
-          "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part1/04_css.md"
+          "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part2/01.md",
+          "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part2/02.md",
+          "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part2/03.md",
+          "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part2/04.md",
+          "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part2/05.md",
+          "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part2/06.md",
+          "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part2/07.md"
         ]
       }
     ]

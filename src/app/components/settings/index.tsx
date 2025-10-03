@@ -31,7 +31,9 @@ export const Settings = ({
     <div className="fixed top-0 left-0 w-full min-h-[35px] bg-teal-800 text-white text-sm py-2 px-4 overflow-y-auto z-[100] flex gap-2 justify-between">
       <div className="flex gap-2">
         <div className="font-bold">
-          <button onClick={() => setOpenAgendaLoader((v) => !v)}>TILE-D</button>
+          <button onClick={() => setOpenAgendaLoader((v) => !v)}>
+            SLIDE-D
+          </button>
         </div>
         <p>
           {courseTitle} - {chapterTitle} - {slideCurrent}/{slideTotal}

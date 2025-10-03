@@ -151,7 +151,7 @@ export default function Tiles({
         widthVW={threeWidthWhenOneHidden}
         topHeightVH={threeTopWhenOneHidden}
       />
-      <TileFour html={htmlFour} open={openFour} widthVW={leftVW} />
+      <TileFour html={htmlFour} open={openFour} />
       {openOne && (
         <div
           className="fixed left-0 z-[6] cursor-row-resize bg-transparent"

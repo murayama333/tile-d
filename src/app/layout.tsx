@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "My App",
-  description: "md2slide viewer",
+  title: "SLIDE-D | スライド作成ツール",
+  description: "SLIDE-D is a tool to create slides from markdown files.",
 };
 
 export default function RootLayout({

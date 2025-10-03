@@ -17,8 +17,9 @@ export const AgendaLoader = ({
   agenda,
 }: Props) => {
   useEffect(() => {
+    if (!open) return;
     loadAgenda();
-  }, [url, loadAgenda]);
+  }, [open, url, loadAgenda]);
   return (
     <div className={`p-4 ${open ? "block" : "hidden"}`}>
       <div className="flex gap-2 items-center mb-2">

@@ -17,8 +17,8 @@ export default function TileThree({
     <div
       className={`common bg-teal-600 text-white fixed left-0 z-[3] ${
         open
-          ? "opacity-100 pointer-events-auto p-2"
-          : "opacity-0 pointer-events-none p-2"
+          ? "opacity-100 pointer-events-auto"
+          : "opacity-0 pointer-events-none"
       }`}
       style={{
         width: `${widthVW}vw`,

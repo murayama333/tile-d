@@ -25,9 +25,13 @@ export default function Home() {
   const [raw, setRaw] = useState("");
   const [showUrl, setShowUrl] = useState(false);
   const [showContents, setShowContents] = useState(false);
+  // URL for agenda.json
+  const defaultAgendaUrl =
+    "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/agenda.json";
+  const [agendaUrl, setAgendaUrl] = useState(defaultAgendaUrl);
   // Agenda state and navigation
   const [agenda, setAgenda] = useState<Agenda[]>([]);
-  const [courseIdx, setCourseIdx] = useState(0);
+  const [courseIdx] = useState(0);
   const [chapterIdx, setChapterIdx] = useState(0);
   const [urlIdx, setUrlIdx] = useState(0);
   const [openOne, setOpenOne] = useState(true);
@@ -38,7 +42,7 @@ export default function Home() {
   const [layoutVersion, setLayoutVersion] = useState(0);
 
   const defaultMdUrl =
-    "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part1/02_css.md";
+    "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/part1/01.md";
 
   const fetchUrl = useCallback(async () => {
     const target = url === "" ? defaultMdUrl : url;
@@ -52,11 +56,20 @@ export default function Home() {
   }, [fetchUrl]);
   const loadAgenda = useCallback(async () => {
     try {
-      const res = await fetch("/agenda.json");
-      const data = (await res.json()) as Agenda[];
-      setAgenda(data);
-    } catch {}
-  }, []);
+      const res = await fetch(agendaUrl, { cache: "no-store" });
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+      const data = await res.json();
+      if (!Array.isArray(data)) {
+        throw new Error("Invalid agenda format: expected an array");
+      }
+      setAgenda(data as Agenda[]);
+    } catch (err) {
+      console.error("Failed to load agenda: ", err);
+      setAgenda([]);
+    }
+  }, [agendaUrl]);
 
   // When navigation indices change, update url/raw by fetching the selected md
   useEffect(() => {
@@ -138,7 +151,7 @@ export default function Home() {
           setOpenThree((v) => !v);
         } else if (e.code === "Digit4" || e.code === "Numpad4") {
           setOpenFour((v) => !v);
-        } else if ((e as any).key === "ArrowRight") {
+        } else if (e.key === "ArrowRight") {
           if (!openTwo) setOpenTwo(true);
           else if (!openThree) setOpenThree(true);
           else if (!openFour) setOpenFour(true);
@@ -146,7 +159,7 @@ export default function Home() {
             // PanelFour まで開いている場合は次ページへ（Alt+Down と同等）
             gotoNext();
           }
-        } else if ((e as any).key === "ArrowLeft") {
+        } else if (e.key === "ArrowLeft") {
           // 逆順に閉じていき、全て閉なら前ページへ
           if (openFour) setOpenFour(false);
           else if (openThree) setOpenThree(false);
@@ -253,8 +266,8 @@ export default function Home() {
   return (
     <div>
       <Settings
-        url={"/agenda.json"}
-        setUrl={() => {}}
+        url={agendaUrl}
+        setUrl={setAgendaUrl}
         agenda={agenda}
         loadAgenda={loadAgenda}
         courseTitle={courseTitle}
