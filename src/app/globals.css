@@ -98,24 +98,20 @@ body {
   /* tv-on animation removed */
 
   .common h1 {
-    @apply text-[2rem] font-bold;
+    @apply text-[1.8rem] font-bold;
   }
 
   .common h3 {
-    @apply text-[1.8rem] font-bold;
+    @apply text-[1.6rem] font-bold;
   }
 
   .common.two h3 {
     @apply text-[1.2rem] font-bold;
   }
 
-  .common code {
-    @apply text-[1.6rem] font-bold bg-slate-100 rounded-md p-1 text-teal-800;
-  }
-
   .common ul,
   .common p {
-    @apply text-[1.6rem];
+    @apply text-[1.4rem];
   }
 
   .common ul {
@@ -123,7 +119,7 @@ body {
   }
 
   .common pre code {
-    @apply rounded-[10px] text-[1.20rem] bg-neutral-800;
+    @apply rounded-[10px] text-[1.1rem];
   }
 
   .common img {
