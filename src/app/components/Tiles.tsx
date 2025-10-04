@@ -54,6 +54,14 @@ export default function Tiles({
   // 既存の矩形ドラッグ移動
   const movingIdxRef = useRef<number | null>(null);
   const movingOffsetRef = useRef<{ dx: number; dy: number } | null>(null);
+  // 矩形の右下リサイズ
+  const resizingIdxRef = useRef<number | null>(null);
+  const resizeStartRef = useRef<{
+    sx: number;
+    sy: number;
+    origW: number;
+    origH: number;
+  } | null>(null);
 
   // 枠色のパレット（赤, 青, 緑, 黄, ピンク, オレンジ, 紫）
   const palette = [
@@ -171,6 +179,17 @@ export default function Tiles({
       drawingStart.current = null;
     };
     const onKeyDown = (e: KeyboardEvent) => {
+      // Alt+X: すべての矩形を消去
+      if (e.altKey && e.code === "KeyQ") {
+        setSelectionRects([]);
+        setDrawingRect(null);
+        drawingRectRef.current = null;
+        movingIdxRef.current = null;
+        movingOffsetRef.current = null;
+        resizingIdxRef.current = null;
+        resizeStartRef.current = null;
+        return;
+      }
       if ((e.key === "Delete" || e.key === "Backspace") && e.altKey) {
         // Alt+Delete/Alt+Backspace: 直前の矩形を削除（編集中は無効）
         if (editingIdx === null) {
@@ -208,6 +227,21 @@ export default function Tiles({
   // 既存矩形のドラッグ移動
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
+      const rIdx = resizingIdxRef.current;
+      const rStart = resizeStartRef.current;
+      if (rIdx !== null && rStart) {
+        // サイズ変更中
+        setSelectionRects((prev) => {
+          const next = [...prev];
+          const r = next[rIdx];
+          if (!r) return prev;
+          const newW = Math.max(10, rStart.origW + (e.clientX - rStart.sx));
+          const newH = Math.max(10, rStart.origH + (e.clientY - rStart.sy));
+          next[rIdx] = { ...r, width: newW, height: newH };
+          return next;
+        });
+        return;
+      }
       const idx = movingIdxRef.current;
       const off = movingOffsetRef.current;
       if (idx === null || !off) return;
@@ -222,6 +256,8 @@ export default function Tiles({
     const onUp = () => {
       movingIdxRef.current = null;
       movingOffsetRef.current = null;
+      resizingIdxRef.current = null;
+      resizeStartRef.current = null;
     };
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup", onUp);
@@ -327,6 +363,33 @@ export default function Tiles({
                   setEditingText(r.text ?? "");
                 }}
               >
+                {/* 右下リサイズハンドル */}
+                <div
+                  onMouseDown={(e) => {
+                    // 編集中や Alt 操作時はスキップ
+                    if (editingIdx !== null || e.button !== 0) return;
+                    e.stopPropagation();
+                    e.preventDefault();
+                    resizingIdxRef.current = i;
+                    resizeStartRef.current = {
+                      sx: e.clientX,
+                      sy: e.clientY,
+                      origW: r.width,
+                      origH: r.height,
+                    };
+                  }}
+                  style={{
+                    position: "absolute",
+                    right: -4,
+                    bottom: -4,
+                    width: 8,
+                    height: 8,
+                    background: c.stroke,
+                    borderRadius: 4,
+                    cursor: "nwse-resize",
+                    pointerEvents: "auto",
+                  }}
+                />
                 {editingIdx !== i && r.text && (
                   <div
                     style={{
