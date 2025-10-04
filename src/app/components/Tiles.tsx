@@ -38,6 +38,50 @@ export default function Tiles({
   const [topVH, setTopVH] = useState(100);
   const rightVW = 100 - leftVW;
 
+  // Alt+Drag で赤枠の矩形を描画するための状態
+  type Rect = {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    text?: string;
+  };
+  const [selectionRects, setSelectionRects] = useState<Rect[]>([]);
+  const [drawingRect, setDrawingRect] = useState<Rect | null>(null);
+  const drawingRectRef = useRef<Rect | null>(null);
+  const [editingIdx, setEditingIdx] = useState<number | null>(null);
+  const [editingText, setEditingText] = useState("");
+  // 既存の矩形ドラッグ移動
+  const movingIdxRef = useRef<number | null>(null);
+  const movingOffsetRef = useRef<{ dx: number; dy: number } | null>(null);
+
+  // 枠色のパレット（赤, 青, 緑, 黄, ピンク, オレンジ, 紫）
+  const palette = [
+    { stroke: "#ef4444", fill: "rgba(239,68,68,0.08)" }, // red-500
+    { stroke: "#3b82f6", fill: "rgba(59,130,246,0.08)" }, // blue-500
+    { stroke: "#22c55e", fill: "rgba(34,197,94,0.10)" }, // green-500
+    { stroke: "#eab308", fill: "rgba(234,179,8,0.12)" }, // yellow-500
+    { stroke: "#ec4899", fill: "rgba(236,72,153,0.10)" }, // pink-500
+    { stroke: "#f97316", fill: "rgba(249,115,22,0.10)" }, // orange-500
+    { stroke: "#a855f7", fill: "rgba(168,85,247,0.10)" }, // purple-500
+  ] as const;
+
+  const rectStyle = (r: Rect, idx: number): React.CSSProperties => {
+    const c = palette[idx % palette.length];
+    return {
+      position: "absolute",
+      left: r.x,
+      top: r.y,
+      width: r.width,
+      height: r.height,
+      border: `2px solid ${c.stroke}`,
+      background: c.fill,
+      boxShadow: `0 0 0 1px ${c.stroke}66`,
+      pointerEvents: "auto",
+    };
+  };
+  const drawingStart = useRef<{ x: number; y: number } | null>(null);
+
   // PanelOne が非表示のときの幅配分（重なり防止）
   const twoWidthWhenOneHidden = !openOne
     ? openTwo && openThree
@@ -86,6 +130,98 @@ export default function Tiles({
     const onUp = () => {
       dragging.current = false;
       draggingH.current = false;
+    };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+  }, []);
+
+  // Alt+ドラッグ選択（赤枠）の実装
+  useEffect(() => {
+    const onMouseDown = (e: MouseEvent) => {
+      if (!e.altKey) return;
+      // 既存のドラッグ操作などを抑止
+      e.preventDefault();
+      drawingStart.current = { x: e.clientX, y: e.clientY };
+      const init = { x: e.clientX, y: e.clientY, width: 0, height: 0 };
+      setDrawingRect(init);
+      drawingRectRef.current = init;
+    };
+    const onMouseMove = (e: MouseEvent) => {
+      if (!drawingStart.current) return;
+      const { x: sx, y: sy } = drawingStart.current;
+      const x = Math.min(sx, e.clientX);
+      const y = Math.min(sy, e.clientY);
+      const width = Math.abs(e.clientX - sx);
+      const height = Math.abs(e.clientY - sy);
+      const next = { x, y, width, height };
+      setDrawingRect(next);
+      drawingRectRef.current = next;
+    };
+    const onMouseUp = () => {
+      const rect = drawingRectRef.current;
+      if (rect && rect.width > 2 && rect.height > 2) {
+        setSelectionRects((prev) => [...prev, rect]);
+      }
+      setDrawingRect(null);
+      drawingRectRef.current = null;
+      drawingStart.current = null;
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if ((e.key === "Delete" || e.key === "Backspace") && e.altKey) {
+        // Alt+Delete/Alt+Backspace: 直前の矩形を削除（編集中は無効）
+        if (editingIdx === null) {
+          setSelectionRects((prev) => (prev.length ? prev.slice(0, -1) : prev));
+        }
+        return;
+      }
+      if (e.key === "Delete" || e.key === "Backspace") {
+        // 単独の Delete/Backspace は「描画中の矩形のキャンセル」のみ。既存矩形は削除しない
+        if (editingIdx !== null) return;
+        if (drawingRectRef.current) {
+          setDrawingRect(null);
+          drawingRectRef.current = null;
+          drawingStart.current = null;
+        }
+      }
+    };
+    const onKeyUp = (e: KeyboardEvent) => {
+      if (e.key === "Alt") drawingStart.current = null;
+    };
+    window.addEventListener("mousedown", onMouseDown);
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+    return () => {
+      window.removeEventListener("mousedown", onMouseDown);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+    };
+  }, []);
+
+  // 既存矩形のドラッグ移動
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      const idx = movingIdxRef.current;
+      const off = movingOffsetRef.current;
+      if (idx === null || !off) return;
+      setSelectionRects((prev) => {
+        const next = [...prev];
+        const r = next[idx];
+        if (!r) return prev;
+        next[idx] = { ...r, x: e.clientX - off.dx, y: e.clientY - off.dy };
+        return next;
+      });
+    };
+    const onUp = () => {
+      movingIdxRef.current = null;
+      movingOffsetRef.current = null;
     };
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup", onUp);
@@ -165,6 +301,103 @@ export default function Tiles({
           style={{ top: `${topVH}vh`, height: 8, width: `${leftVW}vw` }}
           onMouseDown={onMouseDownH}
         />
+      )}
+      {(selectionRects.length > 0 || drawingRect) && (
+        <div className="fixed inset-0 z-[1000] pointer-events-none">
+          {selectionRects.map((r, i) => {
+            const c = palette[i % palette.length];
+            return (
+              <div
+                key={`rect-${i}`}
+                style={rectStyle(r, i)}
+                onMouseDown={(e) => {
+                  if (e.altKey || editingIdx !== null) return;
+                  // 左クリックのみ。テキスト選択などを抑止
+                  if (e.button !== 0) return;
+                  e.preventDefault();
+                  movingIdxRef.current = i;
+                  movingOffsetRef.current = {
+                    dx: e.clientX - r.x,
+                    dy: e.clientY - r.y,
+                  };
+                }}
+                onDoubleClick={(e) => {
+                  e.preventDefault();
+                  setEditingIdx(i);
+                  setEditingText(r.text ?? "");
+                }}
+              >
+                {editingIdx !== i && r.text && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: c.stroke,
+                      fontWeight: 700,
+                      textAlign: "center",
+                      padding: 8,
+                      userSelect: "none",
+                    }}
+                  >
+                    {r.text}
+                  </div>
+                )}
+                {editingIdx === i && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      pointerEvents: "auto",
+                    }}
+                    onDoubleClick={(e) => e.stopPropagation()}
+                  >
+                    <input
+                      autoFocus
+                      value={editingText}
+                      onChange={(e) => setEditingText(e.target.value)}
+                      onBlur={() => {
+                        setSelectionRects((prev) => {
+                          const next = [...prev];
+                          next[i] = { ...next[i], text: editingText };
+                          return next;
+                        });
+                        setEditingIdx(null);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          (e.target as HTMLInputElement).blur();
+                        } else if (e.key === "Escape") {
+                          setEditingIdx(null);
+                        }
+                      }}
+                      style={{
+                        width: "90%",
+                        maxWidth: "100%",
+                        textAlign: "center",
+                        fontWeight: 700,
+                        color: c.stroke,
+                        border: `2px dashed ${c.stroke}`,
+                        padding: "6px 8px",
+                        background: "#fff",
+                        outline: "none",
+                        borderRadius: 6,
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            );
+          })}
+          {drawingRect && (
+            <div style={rectStyle(drawingRect, selectionRects.length)} />
+          )}
+        </div>
       )}
     </>
   );
