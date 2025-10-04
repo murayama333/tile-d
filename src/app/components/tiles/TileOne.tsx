@@ -31,7 +31,7 @@ export default function TileOne({
   }, [visible, effect]);
   return (
     <div
-      className={`common one bg-white fixed left-0 top-0 overflow-hidden ${
+      className={`common one bg-white fixed left-0 top-0 overflow-y-auto ${
         effect === "fade"
           ? `${fade ? "fade" : ""} ${
               visible

@@ -111,7 +111,7 @@ export default function Tiles({
   useEffect(() => {
     if (!prevOpenThree.current && openThree) {
       // close -> open
-      setTopVH(50);
+      setTopVH(45);
     } else if (prevOpenThree.current && !openThree) {
       // open -> close
       setTopVH(100);

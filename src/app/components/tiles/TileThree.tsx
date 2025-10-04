@@ -67,7 +67,7 @@ export default function TileThree({
           }}
         >
           <div
-            className="common bg-slate-200 text-white h-full"
+            className="common bg-slate-200 text-white h-full p-2"
             onDoubleClick={onToggleSize}
             dangerouslySetInnerHTML={{ __html: html }}
           />
