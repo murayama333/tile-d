@@ -45,6 +45,7 @@ export default function Tiles({
     width: number;
     height: number;
     text?: string;
+    colorIdx?: number;
   };
   const [selectionRects, setSelectionRects] = useState<Rect[]>([]);
   const [drawingRect, setDrawingRect] = useState<Rect | null>(null);
@@ -75,7 +76,9 @@ export default function Tiles({
   ] as const;
 
   const rectStyle = (r: Rect, idx: number): React.CSSProperties => {
-    const c = palette[idx % palette.length];
+    const chosenIdx =
+      r.colorIdx !== undefined ? r.colorIdx : idx % palette.length;
+    const c = palette[chosenIdx % palette.length];
     return {
       position: "absolute",
       left: r.x,
@@ -89,6 +92,13 @@ export default function Tiles({
     };
   };
   const drawingStart = useRef<{ x: number; y: number } | null>(null);
+  const currentDrawColorIdxRef = useRef<number | null>(null);
+  const [currentDrawColorIdx, setCurrentDrawColorIdx] = useState<number | null>(
+    null
+  );
+  useEffect(() => {
+    currentDrawColorIdxRef.current = currentDrawColorIdx;
+  }, [currentDrawColorIdx]);
 
   // PanelOne が非表示のときの幅配分（重なり防止）
   const twoWidthWhenOneHidden = !openOne
@@ -147,14 +157,21 @@ export default function Tiles({
     };
   }, []);
 
-  // Alt+ドラッグ選択（赤枠）の実装
+  // R/G/B + ドラッグ選択（色付き矩形）の実装
   useEffect(() => {
     const onMouseDown = (e: MouseEvent) => {
-      if (!e.altKey) return;
+      const colorIdx = currentDrawColorIdxRef.current;
+      if (colorIdx === null) return;
       // 既存のドラッグ操作などを抑止
       e.preventDefault();
       drawingStart.current = { x: e.clientX, y: e.clientY };
-      const init = { x: e.clientX, y: e.clientY, width: 0, height: 0 };
+      const init = {
+        x: e.clientX,
+        y: e.clientY,
+        width: 0,
+        height: 0,
+        colorIdx,
+      };
       setDrawingRect(init);
       drawingRectRef.current = init;
     };
@@ -165,7 +182,13 @@ export default function Tiles({
       const y = Math.min(sy, e.clientY);
       const width = Math.abs(e.clientX - sx);
       const height = Math.abs(e.clientY - sy);
-      const next = { x, y, width, height };
+      const next = {
+        x,
+        y,
+        width,
+        height,
+        colorIdx: drawingRectRef.current?.colorIdx,
+      } as Rect;
       setDrawingRect(next);
       drawingRectRef.current = next;
     };
@@ -179,7 +202,7 @@ export default function Tiles({
       drawingStart.current = null;
     };
     const onKeyDown = (e: KeyboardEvent) => {
-      // Alt+X: すべての矩形を消去
+      // Alt+Q: すべての矩形を消去
       if (e.altKey && e.code === "KeyQ") {
         setSelectionRects([]);
         setDrawingRect(null);
@@ -190,6 +213,20 @@ export default function Tiles({
         resizeStartRef.current = null;
         return;
       }
+      // R/G/B キーで描画色を選択
+      if (e.code === "KeyR") {
+        setCurrentDrawColorIdx(0); // red
+        return;
+      }
+      if (e.code === "KeyG") {
+        setCurrentDrawColorIdx(2); // green
+        return;
+      }
+      if (e.code === "KeyB") {
+        setCurrentDrawColorIdx(1); // blue
+        return;
+      }
+      // Y/P は無効化（押しにくいため）
       if ((e.key === "Delete" || e.key === "Backspace") && e.altKey) {
         // Alt+Delete/Alt+Backspace: 直前の矩形を削除（編集中は無効）
         if (editingIdx === null) {
@@ -209,6 +246,10 @@ export default function Tiles({
     };
     const onKeyUp = (e: KeyboardEvent) => {
       if (e.key === "Alt") drawingStart.current = null;
+      // R/G/B キーを離したら描画モード解除
+      if (e.code === "KeyR" || e.code === "KeyG" || e.code === "KeyB") {
+        setCurrentDrawColorIdx(null);
+      }
     };
     window.addEventListener("mousedown", onMouseDown);
     window.addEventListener("mousemove", onMouseMove);
@@ -341,7 +382,9 @@ export default function Tiles({
       {(selectionRects.length > 0 || drawingRect) && (
         <div className="fixed inset-0 z-[1000] pointer-events-none">
           {selectionRects.map((r, i) => {
-            const c = palette[i % palette.length];
+            const chosenIdx =
+              r.colorIdx !== undefined ? r.colorIdx : i % palette.length;
+            const c = palette[chosenIdx % palette.length];
             return (
               <div
                 key={`rect-${i}`}
