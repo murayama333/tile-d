@@ -27,10 +27,11 @@ export const AgendaLoader = ({
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const demoDisplayUrl =
-    "https://github.com/murayama333/md2slide/blob/main/md/css/agenda.json";
   const demoFetchUrl =
     "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/css/agenda.json";
+
+  const usageUrl =
+    "https://raw.githubusercontent.com/murayama333/md2slide/refs/heads/main/md/usage/agenda.json";
 
   // Loadボタン押下時に保存する方針に変更（テキスト変更では保存しない）
 
@@ -181,7 +182,21 @@ export const AgendaLoader = ({
               <p>アジェンダが読み込まれていません。</p>
               <p>
                 <a
-                  href={demoDisplayUrl}
+                  href={usageUrl}
+                  className="underline text-blue-600"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setError("");
+                    setUrl(usageUrl);
+                    setTimeout(() => inputRef.current?.focus(), 0);
+                  }}
+                >
+                  SLIDE-D の使い方はこちらです
+                </a>
+              </p>
+              <p>
+                <a
+                  href={demoFetchUrl}
                   className="underline text-blue-600"
                   onClick={(e) => {
                     e.preventDefault();
