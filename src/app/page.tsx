@@ -159,6 +159,11 @@ export default function Home() {
     setMounted(true);
   }, []);
 
+  const h2Count = useMemo(() => (raw.match(/^##\s/gm) ?? []).length, [raw]);
+
+  // Markdown変更時の初期表示を H2 数・内容に応じて設定
+  // NOTE: hasPanelTwo/Three/Four の定義以降に配置する
+
   useEffect(() => {
     const keydown = (e: KeyboardEvent) => {
       if (e.altKey) {
@@ -178,11 +183,20 @@ export default function Home() {
         } else if (e.code === "Digit4" || e.code === "Numpad4") {
           setOpenFour((v) => !v);
         } else if (e.key === "ArrowRight") {
-          if (!openTwo) setOpenTwo(true);
-          else if (!openThree) setOpenThree(true);
-          else if (!openFour) setOpenFour(true);
-          else {
-            // PanelFour まで開いている場合は次ページへ（Alt+Down と同等）
+          // H2 個数に基づく開く順序
+          if (h2Count >= 3) {
+            if (!openTwo && hasPanelTwo) setOpenTwo(true);
+            else if (!openThree && hasPanelThree) setOpenThree(true);
+            else if (!openFour && hasPanelFour) setOpenFour(true);
+            else gotoNext();
+          } else if (h2Count === 2) {
+            if (!openTwo && hasPanelTwo) setOpenTwo(true);
+            else if (!openFour && hasPanelFour) setOpenFour(true);
+            else gotoNext();
+          } else if (h2Count === 1) {
+            if (!openFour && hasPanelFour) setOpenFour(true);
+            else gotoNext();
+          } else {
             gotoNext();
           }
         } else if (e.key === "ArrowLeft") {
@@ -218,18 +232,20 @@ export default function Home() {
     gotoNext,
     gotoPrev,
     disableFadeTemporarily,
+    h2Count,
   ]);
 
   const parsed: Parsed = useMemo(() => {
     const parts = raw.split(/^##\s/m);
     const removeFirstLine = (s: string) => s.replace(/^[^\n]*\n?/, "");
-    const [p1 = "", p2 = "", p3 = "", p4 = ""] = parts;
-    return {
-      one: p1,
-      two: removeFirstLine(p2),
-      three: removeFirstLine(p3),
-      four: removeFirstLine(p4),
-    };
+    const p1 = parts[0] ?? "";
+    const sectionCount = Math.max(0, parts.length - 1);
+    // Four は「最後の H2」を割り当て（1個なら Four のみ、2個なら Two+Four、3個以上なら Two+Three+Four）
+    const two = sectionCount >= 2 ? removeFirstLine(parts[1] ?? "") : "";
+    const three = sectionCount >= 3 ? removeFirstLine(parts[2] ?? "") : "";
+    const lastIdx = sectionCount === 0 ? -1 : Math.min(sectionCount, 3);
+    const four = sectionCount >= 1 ? removeFirstLine(parts[lastIdx] ?? "") : "";
+    return { one: p1, two, three, four };
   }, [raw]);
 
   useEffect(() => {
@@ -293,10 +309,26 @@ export default function Home() {
     };
   }, [parsed, mounted]);
 
+  const hasPanelTwo = useMemo(
+    () => parsed.two.replace(/\s+/g, "").length > 0,
+    [parsed.two]
+  );
   const hasPanelThree = useMemo(() => {
     // Markdown段階で空判定（改行や空白のみなら空扱い）
     return parsed.three.replace(/\s+/g, "").length > 0;
   }, [parsed.three]);
+  const hasPanelFour = useMemo(
+    () => parsed.four.replace(/\s+/g, "").length > 0,
+    [parsed.four]
+  );
+
+  // Markdown変更時の初期表示は TileOne のみ開き、他は閉じる
+  useEffect(() => {
+    setOpenOne(true);
+    setOpenTwo(false);
+    setOpenThree(false);
+    setOpenFour(false);
+  }, [raw]);
 
   // 初期表示時のみ agenda を取得（テキスト変更ではフェッチしない）
   useEffect(() => {
